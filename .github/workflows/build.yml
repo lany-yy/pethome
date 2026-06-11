@@ -42,6 +42,13 @@ jobs:
           pip install cython==0.29.37
           pip install buildozer==1.5.0
       
+      - name: Setup Android SDK and Build-Tools
+        run: |
+          sudo apt install -y android-sdk-build-tools
+          mkdir -p ~/.android
+          echo "count=0" > ~/.android/avd.ini
+          echo "lastUsedApiLevel=34" >> ~/.android/avd.ini
+      
       - name: Initialize Buildozer spec if not exists
         run: |
           if [ ! -f buildozer.spec ]; then
@@ -69,6 +76,7 @@ jobs:
         run: |
           rm -rf ~/.buildozer/android/platform/android-ndk* || true
           rm -rf ~/.buildozer/android/platform/android-sdk-linux || true
+          rm -rf ~/.buildozer/android/platform/android-sdk || true
       
       - name: Build APK with retry
         run: |
@@ -83,6 +91,7 @@ jobs:
               sleep 30
               # Clean up potentially corrupted files
               rm -rf ~/.buildozer/android/platform/android-ndk* || true
+              rm -rf ~/.buildozer/android/platform/build-tools || true
             fi
           done
           echo "Build failed after 3 attempts"
