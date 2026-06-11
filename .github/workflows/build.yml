@@ -45,7 +45,8 @@ jobs:
         run: |
           pip install --upgrade pip setuptools wheel
           pip install cython==0.29.37
-          pip install buildozer==1.5.0
+          pip install buildozer==1.4.1
+          pip install p4a==2023.12.12
       
       - name: Setup Android SDK and Build-Tools
         run: |
@@ -62,7 +63,7 @@ jobs:
             # Configure the initialized spec file
             sed -i 's/app.name = MyApplication/app.name = PetManager/g' buildozer.spec
             sed -i 's/app.domain = org.yourapp/app.domain = com.petmanager/g' buildozer.spec
-            sed -i 's/requirements = python3,kivy/requirements = python3,kivy==2.3.1/g' buildozer.spec
+            sed -i 's/requirements = python3,kivy/requirements = python3,kivy==2.2.1/g' buildozer.spec
           else
             echo "Buildozer spec file already exists"
           fi
@@ -71,6 +72,8 @@ jobs:
         run: |
           export CFLAGS="-O2"
           export LDFLAGS=""
+          export LC_ALL=C.UTF-8
+          export LANG=C.UTF-8
           buildozer -v android debug
         timeout-minutes: 180
       
