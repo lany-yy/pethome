@@ -36,7 +36,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy==2.3.1
+requirements = python3,kivy==2.2.1
 
 # (str) Custom source folders for requirements
 # Set this if you want to use local copy of a requirement
@@ -68,7 +68,7 @@ orientation = portrait
 osx.python_version = 3.9
 
 # Kivy version to use
-osx.kivy_version = 2.3.1
+osx.kivy_version = 2.2.1
 
 #
 # Android specific
@@ -88,7 +88,7 @@ fullscreen = 0
 # see https://lottiefiles.com/ for examples and https://airbnb.design/lottie/
 # for general documentation.
 # Lottie files can be created using various tools, like Adobe After Effect or Synfig.
-#android.presplash_lottie = %(source.dir)s/data/presplash.lottie
+# android.presplash_lottie = %(source.dir)s/data/presplash.lottie
 
 # (str) Adaptive icon of the application (used if Android API level is 26+ at runtime)
 #icon.adaptive_foreground.filename = %(source.dir)s/data/icon_fg.png
