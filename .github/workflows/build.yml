@@ -40,7 +40,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install cython==0.29.37
-          pip install buildozer==0.33
+          pip install buildozer==1.5.0
       
       - name: Initialize Buildozer spec if not exists
         run: |
@@ -55,20 +55,20 @@ jobs:
             echo "Buildozer spec file already exists"
           fi
       
-      - name: Clear corrupted buildozer cache
-        run: |
-          rm -rf ~/.buildozer/android/platform/android-sdk-linux || true
-          rm -rf ~/.buildozer/android/platform/android-ndk* || true
-      
-      - name: Cache buildozer files
+      - name: Setup buildozer cache
         uses: actions/cache@v4
         with:
           path: |
             ~/.buildozer
             .buildozer
-          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}-v1
           restore-keys: |
             ${{ runner.os }}-buildozer-
+      
+      - name: Clean NDK cache before build
+        run: |
+          rm -rf ~/.buildozer/android/platform/android-ndk* || true
+          rm -rf ~/.buildozer/android/platform/android-sdk-linux || true
       
       - name: Build APK with retry
         run: |
