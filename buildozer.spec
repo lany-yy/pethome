@@ -61,9 +61,6 @@ android.archs = arm64-v8a,armeabi-v7a
 # (bool) enables Android auto backup feature (Android API >=23)
 android.allow_backup = True
 
-# (int) overrides automatic versionCode computation
-# android.numeric_version = 1
-
 #
 # OSX Specific
 #
