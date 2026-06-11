@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     
     steps:
       - name: Checkout code
@@ -21,54 +21,68 @@ jobs:
           fi
           echo "Found main.py - application entry point exists"
       
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          python-version: '3.10'
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
       
       - name: Install system dependencies
         run: |
-          sudo apt update
-          sudo apt install -y \
-            git zip unzip openjdk-17-jdk \
-            python3-pip autoconf automake libtool libtool-bin m4 \
-            pkg-config zlib1g-dev libncurses5-dev \
-            libncursesw5-dev libtinfo6 cmake libffi-dev \
-            libssl-dev build-essential ninja-build libxcb-shape0 libxcb-xfixes0
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip \
+            python3-dev python3-pip \
+            build-essential automake autoconf \
+            libtool libtoolize pkg-config \
+            zlib1g-dev libncurses5-dev libreadline-dev \
+            libssl-dev libffi-dev \
+            git gawk gperf texinfo help2man \
+            m4 libbz2-dev
       
-      - name: Clean old buildozer cache
+      - name: Clean buildozer cache
         run: |
-          rm -rf ~/.buildozer || true
-          rm -rf .buildozer || true
-          rm -rf ~/.cache/pip || true
+          rm -rf ~/.buildozer .buildozer ~/.android
+          mkdir -p ~/.android
       
-      - name: Install Python dependencies
+      - name: Create android SDK config
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install cython==0.29.36
-          python -m pip install buildozer
-          python -m pip install "kivy==2.1.0"
-      
-      - name: Setup Android SDK and Build-Tools
-        run: |
-          sudo apt install -y android-sdk-build-tools android-sdk
           mkdir -p ~/.android
           echo "count=0" > ~/.android/avd.ini
-          echo "lastUsedApiLevel=34" >> ~/.android/avd.ini
       
-      - name: Build APK
+      - name: Install build tools
         run: |
-          export CFLAGS="-O2"
-          export LDFLAGS=""
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade setuptools wheel
+          python3 -m pip install Cython==0.29.32
+          python3 -m pip install buildozer
+      
+      - name: Build with buildozer
+        run: |
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
           export LC_ALL=C.UTF-8
           export LANG=C.UTF-8
-          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
-          buildozer -v android debug
-        timeout-minutes: 240
+          export CFLAGS="-O2 -fPIC"
+          export CXXFLAGS="-O2 -fPIC"
+          export LDFLAGS="-fPIC"
+          buildozer -v android debug 2>&1 | tee build.log
+        timeout-minutes: 300
+      
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
       
       - name: Upload APK
-        uses: actions/upload-artifact@v4
         if: success()
+        uses: actions/upload-artifact@v4
         with:
           name: pet-manager-apk
           path: bin/*.apk
