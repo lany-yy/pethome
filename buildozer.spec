@@ -19,8 +19,8 @@ source.include_exts = py,png,jpg,kv,atlas,ttf,txt,db,spec,json
 version = 1.0.0
 
 # (list) Application requirements
-# 添加 sqlite3 和其他可能需要的库
-requirements = python3==3.9.5, kivy==2.1.0, sqlite3, pillow
+# 关键修改：移除 python3 的版本号，让 Buildozer 自动匹配
+requirements = python3, hostpython3, kivy==2.1.0, sqlite3, pillow
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -62,14 +62,14 @@ android.archs = arm64-v8a, armeabi-v7a
 # (bool) enables Android auto backup feature (Android API >=23)
 android.allow_backup = True
 
-# 添加日志级别，方便调试
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
 
 #
 # OSX Specific
 #
 
-osx.python_version = 3.9
+osx.python_version = 3
 osx.kivy_version = 2.1.0
 
 #
