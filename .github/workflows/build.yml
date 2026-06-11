@@ -55,6 +55,11 @@ jobs:
             echo "Buildozer spec file already exists"
           fi
       
+      - name: Clear corrupted buildozer cache
+        run: |
+          rm -rf ~/.buildozer/android/platform/android-sdk-linux || true
+          rm -rf ~/.buildozer/android/platform/android-ndk* || true
+      
       - name: Cache buildozer files
         uses: actions/cache@v4
         with:
@@ -65,9 +70,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildozer-
       
-      - name: Build APK
+      - name: Build APK with retry
         run: |
-          buildozer -v android debug
+          for attempt in {1..3}; do
+            echo "Build attempt $attempt/3..."
+            if buildozer -v android debug; then
+              echo "Build successful!"
+              exit 0
+            fi
+            if [ $attempt -lt 3 ]; then
+              echo "Build failed, waiting 30 seconds before retry..."
+              sleep 30
+              # Clean up potentially corrupted files
+              rm -rf ~/.buildozer/android/platform/android-ndk* || true
+            fi
+          done
+          echo "Build failed after 3 attempts"
+          exit 1
+        timeout-minutes: 180
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
