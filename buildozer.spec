@@ -15,18 +15,11 @@ source.dir = .
 # (list) Source files to include (let empty to include all the files)
 source.include_exts = py,png,jpg,kv,atlas
 
-# (list) Source files to exclude (let empty to not exclude anything)
-#source.exclude_exts = spec
-
-# (list) List of directory to exclude (let empty to not exclude anything)
-#source.exclude_dirs = tests, bin
-
 # (str) Application versioning (method 1)
 version = 0.1
 
 # (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy==2.1.0
+requirements = python3,kivy==2.0.0
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -42,7 +35,7 @@ fullscreen = 0
 android.permissions = INTERNET
 
 # (int) Target Android API, should be as high as possible.
-android.api = 34
+android.api = 33
 
 # (int) Minimum API your APK will support.
 android.minapi = 21
@@ -50,13 +43,13 @@ android.minapi = 21
 # (str) Android NDK version to use
 android.ndk = 25b
 
-# (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
+# (int) Android NDK API to use.
 android.ndk_api = 21
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 android.private_storage = True
 
-# (str) Python version (android.python_version for android, python_version for osx)
+# (str) Python version (android.python_version for android)
 android.python_version = 3
 
 # (bool) If True, then automatically accept SDK license
@@ -68,12 +61,15 @@ android.archs = arm64-v8a,armeabi-v7a
 # (bool) enables Android auto backup feature (Android API >=23)
 android.allow_backup = True
 
+# (int) overrides automatic versionCode computation
+# android.numeric_version = 1
+
 #
 # OSX Specific
 #
 
-osx.python_version = 3.10
-osx.kivy_version = 2.1.0
+osx.python_version = 3.9
+osx.kivy_version = 2.0.0
 
 #
 # iOS specific
