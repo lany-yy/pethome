@@ -24,7 +24,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.10'
       
       - name: Install system dependencies
         run: |
@@ -34,39 +34,27 @@ jobs:
             python3-pip autoconf automake libtool libtool-bin m4 \
             pkg-config zlib1g-dev libncurses5-dev \
             libncursesw5-dev libtinfo6 cmake libffi-dev \
-            libssl-dev build-essential
+            libssl-dev build-essential ninja-build libxcb-shape0 libxcb-xfixes0
       
       - name: Clean old buildozer cache
         run: |
           rm -rf ~/.buildozer || true
           rm -rf .buildozer || true
+          rm -rf ~/.cache/pip || true
       
       - name: Install Python dependencies
         run: |
-          pip install --upgrade pip setuptools wheel
-          pip install cython==0.29.37
-          pip install buildozer==1.4.1
-          pip install p4a==2023.12.12
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install cython==0.29.36
+          python -m pip install buildozer
+          python -m pip install "kivy==2.1.0"
       
       - name: Setup Android SDK and Build-Tools
         run: |
-          sudo apt install -y android-sdk-build-tools
+          sudo apt install -y android-sdk-build-tools android-sdk
           mkdir -p ~/.android
           echo "count=0" > ~/.android/avd.ini
           echo "lastUsedApiLevel=34" >> ~/.android/avd.ini
-      
-      - name: Initialize Buildozer spec if not exists
-        run: |
-          if [ ! -f buildozer.spec ]; then
-            echo "Initializing Buildozer spec file..."
-            buildozer init
-            # Configure the initialized spec file
-            sed -i 's/app.name = MyApplication/app.name = PetManager/g' buildozer.spec
-            sed -i 's/app.domain = org.yourapp/app.domain = com.petmanager/g' buildozer.spec
-            sed -i 's/requirements = python3,kivy/requirements = python3,kivy==2.2.1/g' buildozer.spec
-          else
-            echo "Buildozer spec file already exists"
-          fi
       
       - name: Build APK
         run: |
@@ -74,8 +62,9 @@ jobs:
           export LDFLAGS=""
           export LC_ALL=C.UTF-8
           export LANG=C.UTF-8
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
           buildozer -v android debug
-        timeout-minutes: 180
+        timeout-minutes: 240
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -83,4 +72,4 @@ jobs:
         with:
           name: pet-manager-apk
           path: bin/*.apk
-          compression-level: 0
+          retention-days: 30
